@@ -720,21 +720,14 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
 
 
 #pragma mark - Master show/dismiss methods
+- (UIView *) topMostVCView {
+    return [[[UIApplication sharedApplication] keyWindow] rootViewController].view;
+}
 
 - (void)showProgress:(float)progress status:(NSString*)string{
     if(!self.overlayView.superview){
 #if !defined(SV_APP_EXTENSIONS)
-        NSEnumerator *frontToBackWindows = [UIApplication.sharedApplication.windows reverseObjectEnumerator];
-        for (UIWindow *window in frontToBackWindows){
-            BOOL windowOnMainScreen = window.screen == UIScreen.mainScreen;
-            BOOL windowIsVisible = !window.hidden && window.alpha > 0;
-            BOOL windowLevelNormal = window.windowLevel == UIWindowLevelNormal;
-            
-            if(windowOnMainScreen && windowIsVisible && windowLevelNormal){
-                [window addSubview:self.overlayView];
-                break;
-            }
-        }
+        [[self topMostVCView] addSubview:self.overlayView];
 #else
         if(self.viewForExtension){
             [self.viewForExtension addSubview:self.overlayView];
